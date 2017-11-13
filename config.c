@@ -1073,6 +1073,15 @@ static int git_default_core_config(const char *var, const char *value)
 		return 0;
 	}
 
+	/* Printing an ellipsis after an abbreviated SHA-1 value
+	 * is no longer desired but must be selectable for some
+	 * time to come.
+	 */
+	if (!strcmp(var, "core.printsha1ellipsis")) {
+		print_sha1_ellipsis = git_config_bool(var, value);
+		return 0;
+	}
+
 	if (!strcmp(var, "core.disambiguate"))
 		return set_disambiguate_hint_config(var, value);
 
