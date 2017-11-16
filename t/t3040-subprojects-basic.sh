@@ -3,6 +3,18 @@
 test_description='Basic subproject functionality'
 . ./test-lib.sh
 
+# Some of the tests expect an ellipsis after the (abbreviated)
+# SHA-1 value.  The code below results in Git being called with
+# "-c core.printsha1ellipsis=true" which satisfies those tests.
+do_print_sha1_ellipsis="'core.printsha1ellipsis=true'"
+if test -z "${GIT_CONFIG_PARAMETERS}"
+then
+	GIT_CONFIG_PARAMETERS="${do_print_sha1_ellipsis}"
+else
+	GIT_CONFIG_PARAMETERS="${GIT_CONFIG_PARAMETERS} ${do_print_sha1_ellipsis}"
+fi
+export GIT_CONFIG_PARAMETERS
+
 test_expect_success 'setup: create superproject' '
 	: >Makefile &&
 	git add Makefile &&
