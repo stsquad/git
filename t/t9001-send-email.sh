@@ -172,6 +172,27 @@ test_expect_success $PREREQ 'cc trailer with various syntax' '
 	test_cmp expected-cc commandline1
 '
 
+test_expect_success $PREREQ 'setup get_mainter script for cc trailer' "
+cat >expected-cc-script.sh <<-EOF && chmod +x expected-cc-script.sh
+#!/bin/sh
+echo 'One Person <one@example.com> (supporter:THIS (FOO/bar))'
+echo 'Two Person <two@example.com> (maintainer:THIS THING)'
+echo 'Third List <three@example.com> (moderated list:THIS THING (FOO/bar))'
+echo '<four@example.com> (moderated list:FOR THING)'
+echo 'five@example.com (open list:FOR THING (FOO/bar))'
+echo 'six@example.com (open list)'
+EOF
+"
+
+test_expect_success $PREREQ 'cc trailer with get_maintainer output' '
+	test_commit cc-trailer &&
+	clean_fake_sendmail &&
+	git send-email -1 --to=recipient@example.com \
+		--cc-cmd="$(pwd)/expected-cc-script.sh" \
+		--smtp-server="$(pwd)/fake.sendmail" &&
+	test_cmp expected-cc commandline1
+'
+
 test_expect_success $PREREQ 'setup expect' "
 cat >expected-show-all-headers <<\EOF
 0001-Second.patch
